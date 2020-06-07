@@ -5,10 +5,14 @@
   ![alt text](thermal_go.png "diagram")
 
  ## Software
+
+ Plug in your Arduino Nano to your computer, identify the COM port and execute the following:
  
  ```
  tinygo flash -target arduino -port COM<insert number> .
  ```
+
+ Note: You will need to unplug the dfminiplayer from the RX, TX pins before flashing 
 
  ## Construction
 
@@ -24,7 +28,7 @@
  * 9V battery, with connector
 
 
- ## Credit
+ ## References
 
 https://github.com/Galactic-Empire-Props/Arduino-Thermal-Detonator-V1.0
 
