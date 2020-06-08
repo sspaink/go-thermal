@@ -20,7 +20,6 @@ func (led *LED) blink(i int) {
 
 // RunningLED defines the sequence leds for the three front lights
 type RunningLED struct {
-	onLed    machine.Pin
 	ledOne   LED
 	ledTwo   LED
 	ledThree LED
@@ -31,45 +30,43 @@ type RunningLED struct {
 // NewRunningLED returns a warningLED
 func NewRunningLED() *RunningLED {
 
-	var w RunningLED
+	var r RunningLED
 
-	w.onLed = machine.Pin(13)
-	w.ledOne.l = machine.Pin(12)
-	w.ledTwo.l = machine.Pin(11)
-	w.ledThree.l = machine.Pin(10)
+	r.ledOne.l = machine.Pin(12)
+	r.ledTwo.l = machine.Pin(11)
+	r.ledThree.l = machine.Pin(10)
 
-	w.onLed.Configure(machine.PinConfig{Mode: machine.PinOutput})
-	w.ledOne.l.Configure(machine.PinConfig{Mode: machine.PinOutput})
-	w.ledTwo.l.Configure(machine.PinConfig{Mode: machine.PinOutput})
-	w.ledThree.l.Configure(machine.PinConfig{Mode: machine.PinOutput})
+	r.ledOne.l.Configure(machine.PinConfig{Mode: machine.PinOutput})
+	r.ledTwo.l.Configure(machine.PinConfig{Mode: machine.PinOutput})
+	r.ledThree.l.Configure(machine.PinConfig{Mode: machine.PinOutput})
 
-	w.ledOne.state = []bool{true, true, true, true, false, false, false, true, false}
-	w.ledTwo.state = []bool{true, false, true, false, true, true, false, true, false}
-	w.ledThree.state = []bool{true, false, false, true, true, false, true, false, false}
+	r.ledOne.state = []bool{true, true, true, true, false, false, false, true, false}
+	r.ledTwo.state = []bool{true, false, true, false, true, true, false, true, false}
+	r.ledThree.state = []bool{true, false, false, true, true, false, true, false, false}
 
-	w.currentState = 0
+	r.currentState = 0
 
-	return &w
+	return &r
 
 }
 
-func (w *RunningLED) blink(rollerSwitch machine.Pin) {
+// TurnOff will set all the LED to low
+func (r *RunningLED) TurnOff() {
+	r.ledOne.l.Low()
+	r.ledTwo.l.Low()
+	r.ledThree.l.Low()
+}
 
-	if !rollerSwitch.Get() {
-		w.onLed.Low()
-		w.ledOne.l.Low()
-		w.ledTwo.l.Low()
-		w.ledThree.l.Low()
-		return
-	}
+// Blink will change the state of the warning LED's
+func (r *RunningLED) Blink() {
 
-	w.ledOne.blink(w.currentState)
-	w.ledTwo.blink(w.currentState)
-	w.ledThree.blink(w.currentState)
+	r.ledOne.blink(r.currentState)
+	r.ledTwo.blink(r.currentState)
+	r.ledThree.blink(r.currentState)
 
-	w.currentState++
-	if w.currentState > 8 {
-		w.currentState = 0
+	r.currentState++
+	if r.currentState > 8 {
+		r.currentState = 0
 	}
 
 }

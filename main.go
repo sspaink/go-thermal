@@ -7,6 +7,8 @@ import (
 
 // ThermalDetonator defines the components needed for the prop
 type ThermalDetonator struct {
+	onLED        machine.Pin
+	tiltSensor   machine.Pin
 	runningLED   *RunningLED
 	dfMiniPlayer *Dfminiplayer
 	rollerSwitch machine.Pin
@@ -16,6 +18,9 @@ type ThermalDetonator struct {
 // NewThermalDetonator setups the thermal detonator prop
 func NewThermalDetonator() *ThermalDetonator {
 	var thermDet ThermalDetonator
+
+	thermDet.tiltSensor = machine.Pin(9)
+	thermDet.tiltSensor.Configure(machine.PinConfig{Mode: machine.PinInput})
 
 	thermDet.runningLED = NewRunningLED()
 
@@ -27,26 +32,65 @@ func NewThermalDetonator() *ThermalDetonator {
 
 	thermDet.prevSwitch = thermDet.rollerSwitch.Get()
 
+	thermDet.onLED = machine.Pin(13)
+	thermDet.onLED.Configure(machine.PinConfig{Mode: machine.PinOutput})
+
 	return &thermDet
 }
 
+func (thermDet *ThermalDetonator) turnOffLights() {
+	thermDet.onLED.Low()
+	thermDet.runningLED.TurnOff()
+}
+
 func (thermDet *ThermalDetonator) loop() {
+
+	exploded := false
+	started := thermDet.rollerSwitch.Get()
+
 	for {
+
+		// Check if the rollerswitch has been pressed
 		if thermDet.prevSwitch != thermDet.rollerSwitch.Get() {
+
+			exploded = false
 
 			thermDet.dfMiniPlayer.Pause()
 			thermDet.dfMiniPlayer.Play(3)
 
 			thermDet.prevSwitch = thermDet.rollerSwitch.Get()
-		} else {
-			if thermDet.dfMiniPlayer.busy.Get() && thermDet.rollerSwitch.Get() {
-				thermDet.dfMiniPlayer.Play(2)
+
+			if thermDet.rollerSwitch.Get() {
+				started = true
+			} else {
+				thermDet.turnOffLights()
+				started = false
 			}
+		} else {
+
+			if !exploded && started && thermDet.rollerSwitch.Get() {
+				if thermDet.dfMiniPlayer.busy.Get() {
+					thermDet.dfMiniPlayer.Play(2)
+				}
+
+				if thermDet.tiltSensor.Get() {
+					thermDet.dfMiniPlayer.Pause()
+					thermDet.dfMiniPlayer.Play(1)
+					thermDet.turnOffLights()
+					exploded = true
+					thermDet.prevSwitch = thermDet.rollerSwitch.Get()
+					continue
+				}
+			}
+
 		}
 
-		thermDet.runningLED.blink(thermDet.rollerSwitch)
+		if !exploded && started && thermDet.rollerSwitch.Get() {
+			thermDet.onLED.High()
+			thermDet.runningLED.Blink()
+			time.Sleep(time.Second)
+		}
 
-		time.Sleep(time.Second)
 	}
 }
 
