@@ -25,7 +25,7 @@ func NewThermalDetonator() *ThermalDetonator {
 	thermDet.runningLED = NewRunningLED()
 
 	thermDet.dfMiniPlayer = NewDfminiplayer()
-	thermDet.dfMiniPlayer.Volume(20)
+	thermDet.dfMiniPlayer.Volume(30)
 
 	thermDet.rollerSwitch = machine.Pin(7)
 	thermDet.rollerSwitch.Configure(machine.PinConfig{Mode: machine.PinInput})
