@@ -70,3 +70,10 @@ func (r *RunningLED) Blink() {
 	}
 
 }
+
+// Exploding will flash the lights for immenent explosion!
+func (r *RunningLED) Exploding() {
+	r.ledOne.l.Set(!r.ledOne.l.Get())
+	r.ledTwo.l.Set(!r.ledTwo.l.Get())
+	r.ledThree.l.Set(!r.ledThree.l.Get())
+}

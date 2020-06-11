@@ -76,7 +76,8 @@ func (thermDet *ThermalDetonator) loop() {
 				if thermDet.tiltSensor.Get() {
 					thermDet.dfMiniPlayer.Pause()
 					thermDet.dfMiniPlayer.Play(1)
-					thermDet.turnOffLights()
+					thermDet.runningLED.TurnOff()
+					thermDet.runningLED.Exploding()
 					exploded = true
 					thermDet.prevSwitch = thermDet.rollerSwitch.Get()
 					continue
@@ -85,10 +86,21 @@ func (thermDet *ThermalDetonator) loop() {
 
 		}
 
-		if !exploded && started && thermDet.rollerSwitch.Get() {
-			thermDet.onLED.High()
-			thermDet.runningLED.Blink()
-			time.Sleep(time.Second)
+		if started && thermDet.rollerSwitch.Get() {
+			if !exploded {
+				thermDet.onLED.High()
+				thermDet.runningLED.Blink()
+				time.Sleep(time.Second)
+			} else if exploded {
+				if thermDet.dfMiniPlayer.busy.Get() {
+					thermDet.turnOffLights()
+				} else {
+					thermDet.onLED.Set(!thermDet.onLED.Get())
+					thermDet.runningLED.Exploding()
+					time.Sleep(time.Second / 2)
+				}
+
+			}
 		}
 
 	}

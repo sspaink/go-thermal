@@ -12,7 +12,7 @@
  tinygo flash -target arduino -port COM<insert number> .
  ```
 
- Note: You will need to unplug the dfminiplayer from the RX, TX pins before flashing 
+ Note: You will need to unplug the dfminiplayer from the RX pin before flashing 
 
  ## Construction
 
