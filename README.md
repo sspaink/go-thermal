@@ -29,6 +29,10 @@
  * 1x 3mm Red LED
  * 3D printed body: https://www.thingiverse.com/thing:2065383
 
+ ## Final
+
+   ![alt text](resources/final.jpg "diagram")
+
  ## References
 
 * Great project!: https://github.com/Galactic-Empire-Props/Arduino-Thermal-Detonator-V1.0
